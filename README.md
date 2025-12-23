@@ -18,7 +18,7 @@ The design is intentionally simple:
 - 🔄 **Independent processes** – Each stage runs as its own process you can start/stop independently
 - 🔒 **Security-first** – All sensitive credentials live in `.env` and are never committed
 
-> 💡 **Note:** This repo is the **public, anonymized companion** to the `Wayback Archeologist` article. It focuses on architecture and patterns, not on scraping any specific site.
+> 💡 **Note:** This repo is the **public, anonymized companion** to the `Wayback Archeologist` article (https://medium.com/@navinyp/wayback-archeologist-how-i-turned-one-hacky-script-into-a-fault-tolerant-internet-archaeology-52be1e6fca35). It focuses on architecture and patterns, not on scraping any specific site.
 
 ---
 
