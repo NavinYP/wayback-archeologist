@@ -1,0 +1,52 @@
+stateDiagram-v2
+    [*] --> Scraping: Query starts
+    
+    Scraping --> Scraped: Links collected
+    
+    Scraped --> DirectPending: Initialize status.json
+    
+    DirectPending --> DirectInProgress: Worker picks up
+    DirectInProgress --> DirectCompleted: Downloads done
+    DirectInProgress --> DirectFailed: Error
+    
+    DirectCompleted --> ArchivePending: Check for archive links
+    DirectFailed --> ArchivePending: Continue anyway
+    
+    ArchivePending --> ArchiveInProgress: Archive worker picks up
+    ArchiveInProgress --> ArchiveCompleted: Archive downloads done
+    ArchiveInProgress --> ArchiveFailed: Error
+    
+    ArchiveCompleted --> SplitPending: Both downloads done
+    ArchiveFailed --> SplitPending: Continue anyway
+    
+    SplitPending --> SplitInProgress: Split service picks up
+    SplitInProgress --> SplitCompleted: Batching done
+    SplitInProgress --> SplitFailed: Error
+    
+    SplitCompleted --> [*]: Query complete
+    
+    note right of Scraping
+        Scraper Service writes:
+        - links_count
+        - scraped_at
+        - Initializes all stages to "pending"
+    end note
+    
+    note right of DirectInProgress
+        Direct Worker owns:
+        - direct_download_status
+        - direct_download_count
+    end note
+    
+    note right of ArchiveInProgress
+        Archive Worker owns:
+        - archive_download_status
+        - archive_download_count
+    end note
+    
+    note right of SplitInProgress
+        Split Service owns:
+        - split_status
+        - split_summary
+    end note
+

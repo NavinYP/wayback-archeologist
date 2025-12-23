@@ -1,0 +1,56 @@
+graph TB
+    subgraph "Input"
+        LT[links.txt<br/>All URLs]
+    end
+    
+    subgraph "Archive Worker"
+        FILTER[Filter GhostClips URLs]
+        NORM[Normalize to Wayback URLs]
+        AL[archive_links.txt<br/>Per-query manifest]
+        
+        subgraph "Sequential Mode"
+            SEQ[Resolve → Download<br/>One at a time]
+        end
+        
+        subgraph "Parallel Mode"
+            RESOLVE[Resolver Pool<br/>Extract media URLs]
+            QUEUE[In-Memory Queue]
+            DOWNLOAD[Downloader Pool<br/>Stream to disk]
+        end
+        
+        UPDATE[Update status.json<br/>archive_download_status]
+    end
+    
+    subgraph "Output"
+        RAW[raw/archive_host/<br/>Downloaded files]
+        ST[status.json<br/>Counts & status]
+    end
+    
+    subgraph "Proxy Cache"
+        PC[proxies_cached.json]
+    end
+    
+    LT --> FILTER
+    FILTER --> NORM
+    NORM --> AL
+    
+    AL --> SEQ
+    AL --> RESOLVE
+    
+    SEQ --> UPDATE
+    RESOLVE --> QUEUE
+    QUEUE --> DOWNLOAD
+    DOWNLOAD --> UPDATE
+    
+    PC --> RESOLVE
+    PC --> DOWNLOAD
+    
+    UPDATE --> RAW
+    UPDATE --> ST
+    
+    style FILTER fill:#e1f5ff
+    style RESOLVE fill:#fff4e1
+    style DOWNLOAD fill:#e8f5e9
+    style UPDATE fill:#fce4ec
+    style PC fill:#fff9c4
+

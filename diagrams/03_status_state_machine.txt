@@ -1,0 +1,57 @@
+STATUS.JSON STATE MACHINE (ASCII)
+==================================
+
+Query Start
+    │
+    ▼
+┌─────────────┐
+│  Scraping   │  ← Scraper Service writes links_count, scraped_at
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│  Scraped    │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────┐
+│ Direct Pending      │  ← Initialize all stages to "pending"
+└──────┬──────────────┘
+       │
+       ▼
+┌─────────────────────┐
+│ Direct In Progress  │  ← Direct Worker owns this stage
+└──────┬──────────────┘
+       │
+       ├───► Direct Completed ───┐
+       │                          │
+       └───► Direct Failed ──────┼──┐
+                                 │  │
+                                 ▼  ▼
+                        ┌─────────────────────┐
+                        │ Archive Pending      │
+                        └──────────┬───────────┘
+                                   │
+                                   ▼
+                        ┌─────────────────────┐
+                        │ Archive In Progress  │  ← Archive Worker owns this
+                        └──────────┬───────────┘
+                                   │
+                                   ├───► Archive Completed ───┐
+                                   │                           │
+                                   └───► Archive Failed ──────┼──┐
+                                                               │  │
+                                                               ▼  ▼
+                                                      ┌─────────────────────┐
+                                                      │ Split Pending       │
+                                                      └──────────┬──────────┘
+                                                                 │
+                                                                 ▼
+                                                      ┌─────────────────────┐
+                                                      │ Split In Progress   │  ← Split Service owns this
+                                                      └──────────┬──────────┘
+                                                                 │
+                                                                 ├───► Split Completed ───► [Done]
+                                                                 │
+                                                                 └───► Split Failed ───────► [Done]
+

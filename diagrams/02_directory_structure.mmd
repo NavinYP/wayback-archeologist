@@ -1,0 +1,58 @@
+graph TD
+    ROOT[downloads/]
+    
+    Q1[query_label_1/]
+    Q2[query_label_2/]
+    QN[...]
+    
+    subgraph "Query Directory Contents"
+        LT[links.txt<br/>All URLs]
+        ST[status.json<br/>Pipeline State]
+        MF[manifest.json<br/>Per-URL Status]
+        
+        subgraph "raw/"
+            RAW[raw/]
+            H1[host1_com/]
+            H2[host2_com/]
+            ARCH[archive_host/]
+            FILES[Files organized by host]
+        end
+        
+        subgraph "split/"
+            SPLIT[split/]
+            B1[label_1/<br/>100 files]
+            B2[label_2/<br/>100 files]
+            BN[...]
+            LG[label_large/<br/>Large files]
+        end
+    end
+    
+    ROOT --> Q1
+    ROOT --> Q2
+    ROOT --> QN
+    
+    Q1 --> LT
+    Q1 --> ST
+    Q1 --> MF
+    Q1 --> RAW
+    Q1 --> SPLIT
+    
+    RAW --> H1
+    RAW --> H2
+    RAW --> ARCH
+    H1 --> FILES
+    H2 --> FILES
+    ARCH --> FILES
+    
+    SPLIT --> B1
+    SPLIT --> B2
+    SPLIT --> BN
+    SPLIT --> LG
+    
+    style ROOT fill:#e0e0e0
+    style LT fill:#e1f5ff
+    style ST fill:#fff4e1
+    style MF fill:#e8f5e9
+    style RAW fill:#fce4ec
+    style SPLIT fill:#f3e5f5
+

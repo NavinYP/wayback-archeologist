@@ -1,0 +1,27 @@
+PER-QUERY DIRECTORY STRUCTURE (ASCII)
+=====================================
+
+downloads/
+│
+├── query_label_1/
+│   ├── links.txt              # All URLs for this query
+│   ├── manifest.json           # Per-URL download state
+│   ├── status.json             # Pipeline stage state machine
+│   ├── raw/                    # Downloaded files
+│   │   ├── host1_com/
+│   │   │   └── file1.jpg
+│   │   ├── host2_com/
+│   │   │   └── file2.mp4
+│   │   └── archive_host/       # GhostClips via Wayback
+│   │       └── clip1.mp4
+│   └── split/                  # Curated batches
+│       ├── label_1/            # 100 files
+│       ├── label_2/            # 100 files
+│       ├── ...
+│       └── label_large/        # Files > 10MB
+│
+├── query_label_2/
+│   └── ...
+│
+└── ...
+

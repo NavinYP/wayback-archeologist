@@ -1,0 +1,37 @@
+graph LR
+    subgraph "Proxy Pool Service Loop"
+        START[Start]
+        LOAD[Load cached proxies<br/>proxies_cached.json]
+        VALIDATE[Validate existing<br/>Test against targets]
+        CHECK{Enough<br/>proxies?}
+        FETCH[Fetch from<br/>multiple sources]
+        TEST[Test & Score<br/>proxies]
+        MERGE[Merge validated +<br/>new proxies]
+        SAVE[Save to<br/>proxies_cached.json]
+        SLEEP[Sleep<br/>refresh_interval]
+    end
+    
+    subgraph "Workers Consume"
+        DW[Direct Worker<br/>Reads cache]
+        AW[Archive Worker<br/>Reads cache]
+    end
+    
+    START --> LOAD
+    LOAD --> VALIDATE
+    VALIDATE --> CHECK
+    CHECK -->|No| FETCH
+    CHECK -->|Yes| SAVE
+    FETCH --> TEST
+    TEST --> MERGE
+    MERGE --> SAVE
+    SAVE --> SLEEP
+    SLEEP --> LOAD
+    
+    SAVE --> DW
+    SAVE --> AW
+    
+    style START fill:#e1f5ff
+    style SAVE fill:#fff4e1
+    style DW fill:#e8f5e9
+    style AW fill:#fce4ec
+

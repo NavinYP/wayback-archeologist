@@ -1,0 +1,41 @@
+graph TB
+    subgraph "Input"
+        Q[queries.txt]
+    end
+    
+    subgraph "Services"
+        SS[Scraper Service<br/>LanternChat/AgoraBoard]
+        PS[Proxy Pool Service<br/>Background Loop]
+        DW[Direct Download Worker<br/>Media Hosts]
+        AW[Archive Worker<br/>GhostClips via Wayback]
+        SPLIT[Split & Curation Service]
+    end
+    
+    subgraph "Shared State"
+        PC[proxies_cached.json<br/>Shared Proxy Cache]
+        DL[downloads/<br/>Per-Query Directories<br/>links.txt, status.json, manifest.json<br/>raw/, split/]
+    end
+    
+    Q --> SS
+    SS --> DL
+    
+    PS --> PC
+    PC --> DW
+    PC --> AW
+    
+    DL --> DW
+    DL --> AW
+    DL --> SPLIT
+    
+    DW --> DL
+    AW --> DL
+    SPLIT --> DL
+    
+    style SS fill:#e1f5ff
+    style PS fill:#fff4e1
+    style DW fill:#e8f5e9
+    style AW fill:#fce4ec
+    style SPLIT fill:#f3e5f5
+    style PC fill:#fff9c4
+    style DL fill:#e0e0e0
+

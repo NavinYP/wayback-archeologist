@@ -1,0 +1,75 @@
+PROXY SERVICE FLOW (ASCII)
+===========================
+
+┌─────────────────────────────────────────────────────────────┐
+│              Proxy Pool Service (Background Loop)           │
+└─────────────────────────────────────────────────────────────┘
+
+    Start
+      │
+      ▼
+┌─────────────┐
+│ Load Cache  │  ← Read proxies_cached.json (even if stale)
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ Validate    │  ← Re-test existing proxies against targets
+└──────┬──────┘
+       │
+       ▼
+    ┌─────┐
+    │ Enough│
+    │ proxies?│
+    └───┬───┘
+        │
+    ┌───┴───┐
+    │       │
+   NO      YES
+    │       │
+    ▼       │
+┌─────────┐ │
+│ Fetch   │ │
+│ from    │ │
+│ Sources │ │
+└────┬────┘ │
+     │      │
+     ▼      │
+┌─────────┐ │
+│ Test &  │ │
+│ Score   │ │
+└────┬────┘ │
+     │      │
+     ▼      │
+┌─────────┐ │
+│ Merge   │ │
+└────┬────┘ │
+     │      │
+     └──────┘
+        │
+        ▼
+┌─────────────┐
+│ Save Cache  │  ← Write to proxies_cached.json
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│   Sleep     │  ← Wait refresh_interval
+└──────┬──────┘
+       │
+       └──────► (Loop back to Load Cache)
+
+┌─────────────────────────────────────────────────────────────┐
+│              Workers Consume (Read-Only)                    │
+└─────────────────────────────────────────────────────────────┘
+
+    proxies_cached.json
+           │
+    ┌──────┴──────┐
+    │             │
+    ▼             ▼
+┌─────────┐  ┌─────────┐
+│ Direct  │  │ Archive │
+│ Worker  │  │ Worker  │
+└─────────┘  └─────────┘
+

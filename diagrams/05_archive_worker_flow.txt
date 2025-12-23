@@ -1,0 +1,71 @@
+ARCHIVE WORKER FLOW (ASCII)
+===========================
+
+┌─────────────┐
+│ links.txt   │  ← All URLs from scraper
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ Filter      │  ← Extract GhostClips URLs only
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ Normalize   │  ← Convert to web.archive.org/web/{url}
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────┐
+│ archive_links.txt   │  ← Per-query manifest
+└──────┬──────────────┘
+       │
+       ├──────────────────────┐
+       │                      │
+       ▼                      ▼
+┌──────────────┐      ┌──────────────────────┐
+│ Sequential   │      │ Parallel Mode       │
+│ Mode         │      │                      │
+│              │      │ ┌──────────────────┐ │
+│ Resolve 1    │      │ │ Resolver Pool    │ │
+│ Download 1   │      │ │ (Extract URLs)   │ │
+│              │      │ └────────┬─────────┘ │
+│ Resolve 2    │      │          │          │
+│ Download 2   │      │          ▼          │
+│              │      │ ┌──────────────────┐ │
+│ ...          │      │ │ In-Memory Queue  │ │
+└──────┬───────┘      │ └────────┬─────────┘ │
+       │              │          │          │
+       │              │          ▼          │
+       │              │ ┌──────────────────┐ │
+       │              │ │ Downloader Pool  │ │
+       │              │ │ (Stream to disk) │ │
+       │              │ └──────────────────┘ │
+       │              └──────────┬───────────┘
+       │                         │
+       └─────────────┬───────────┘
+                     │
+                     ▼
+            ┌─────────────────┐
+            │ Update          │
+            │ status.json     │
+            │ (archive_*)     │
+            └────────┬────────┘
+                     │
+         ┌───────────┴───────────┐
+         │                        │
+         ▼                        ▼
+┌──────────────┐         ┌──────────────┐
+│ raw/        │         │ status.json  │
+│ archive_host/│         │ (counts)     │
+└──────────────┘         └──────────────┘
+
+┌─────────────────────────────────────────────┐
+│         Proxy Cache (Shared)                │
+│      proxies_cached.json                    │
+└───────────────┬─────────────────────────────┘
+                │
+                ├───► Used by Resolver Pool
+                │
+                └───► Used by Downloader Pool
+
